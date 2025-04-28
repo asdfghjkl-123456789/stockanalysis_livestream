@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Analysis</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(to bottom, #1e3c72, #484848); /* dark body */
+    color: white;
+}
+
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background: linear-gradient(to right, #a6c2f7, #243b55);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        .section {
+            padding: 50px 20px;
+        }
+
+        .chart-container {
+            width: 80%;
+            margin: auto;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 10px;
+        }
+
+        .stock-info {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            width: 50%;
+        }
+
+        button, select {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button {
+            background: #ff9800;
+            color: white;
+        }
+
+        button:hover {
+            background: #e68900;
+        }
+
+        footer {
+            background: linear-gradient(to right, #a6c2f7, #243b55);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        /* Custom Side Menu Styling */
+.offcanvas {
+    background: #f4f4f4; /* Light background for contrast */
+    color: #333;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.offcanvas .offcanvas-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1e3c72;
+}
+
+.offcanvas .nav-link {
+    font-size: 18px;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.offcanvas .nav-link:hover {
+    background-color: #d1e0ff;
+    color: #1e3c72;
+    text-decoration: none;
+}
+
+.btn-close-white {
+    filter: invert(1); /* Make the close button visible on light bg */
+}
+.offcanvas {
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+}
+.login-signup-modal {
+  background-color: #f4f4f4;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.modal-title {
+  color: #1e3c72;
+  font-weight: bold;
+}
+
+
+
+    </style>
+</head>
+<nav class="navbar sticky-top" style="background: linear-gradient(to right, #a6c2f7, #243b55);">
+    
+    <center><h1>Empowering Your Financial Future</h1></center>
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <!-- Trigger Button -->
+      <button class="btn btn-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideMenu" aria-controls="sideMenu">
+        ☰ Menu
+      </button>
+      
+    </div>
+  </nav>
+  
+  <!-- Offcanvas Side Menu -->
+  <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sideMenu" aria-labelledby="sideMenuLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sideMenuLabel">Menu</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="#">Home</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="#about">About Us</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="#contact">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  
+      
+
+    <h1 class="mt-4">Stock Price Analysis</h1>
+    <select id="stockSymbol" aria-placeholder="Enter Stock Symbol">
+        <option value="AAPL">Apple (AAPL)</option>
+        <option value="MSFT">Microsoft (MSFT)</option>
+        <option value="GOOGL">Google (GOOGL)</option>
+        <option value="AMZN">Amazon (AMZN)</option>
+        <option value="TSLA">Tesla (TSLA)</option>
+        <option value="META">Meta (META)</option>
+        <option value="NFLX">Netflix (NFLX)</option>
+        <option value="NVDA">NVIDIA (NVDA)</option>
+        <option value="AMD">AMD (AMD)</option>
+        <option value="INTC">Intel (INTC)</option>
+        <option value="ORCL">Oracle (ORCL)</option>
+        <option value="IBM">IBM (IBM)</option>
+        <option value="CSCO">Cisco (CSCO)</option>
+        <option value="QCOM">Qualcomm (QCOM)</option>
+        <option value="BA">Boeing (BA)</option>
+        <option value="GE">General Electric (GE)</option>
+        <option value="F">Ford (F)</option>
+        <option value="GM">General Motors (GM)</option>
+        <option value="UBER">Uber (UBER)</option>
+        <option value="LYFT">Lyft (LYFT)</option>
+        
+    </select>
+    <button onclick="fetchStockData()">Search</button>
+    <div class="chart-container">
+        <canvas id="stockChart"></canvas>
+    </div>
+
+    <div id="stockInfo" class="stock-info">
+        <h2>Stock Information</h2>
+        <p id="price">Price: --</p>
+        <p id="change">Change: --</p>
+        <p id="volume">Volume: --</p>
+    </div>
+    <br><br>
+
+    <hr color="white" width="100%">
+
+    <!-- About Us Section -->
+    <div id="about" class="section">
+        <br><br>
+        <h2>About Us</h2>
+        <p>
+            <strong>Stock Market Analysis</strong> is a powerful, easy-to-use platform designed to help traders, investors, and financial analysts understand market trends through dynamic data visualization. 
+            Whether you're a beginner exploring the world of stocks or a seasoned investor making data-driven decisions, our tools are crafted to provide deep insights into market performance.
+        </p>
+    
+        <h3>What We Offer</h3>
+        <ul style="list-style: none; padding-left: 0;">
+            <li>📈 Real-time and historical stock charting</li>
+            <li>🧠 Intelligent data interpretation tools</li>
+            <li>🔒 Secure login/signup and user-based preferences (coming soon!)</li>
+            <li>⚙️ Responsive and mobile-friendly UI</li>
+        </ul>
+    
+        <h3>Our Vision</h3>
+        <p>
+            To democratize financial data analytics and provide everyone—from independent traders to enterprise users—with powerful tools to interpret the market with clarity and confidence.
+        </p>
+    
+        <h3>Why Choose Us?</h3>
+        <p>
+            Our platform is built with modern technologies like HTML5, CSS3, JavaScript, and Chart.js for smooth interaction and seamless updates. We believe in simplicity, clarity, and functionality—bringing market analysis right to your fingertips.
+        </p>
+    
+        <p>
+            Join a growing community of market enthusiasts and professionals leveraging our tools for smarter, faster, and better decision-making.
+        </p>
+    </div>
+    <div class="section" style="background-color: rgba(255,255,255,0.1); border-radius: 12px; margin-top: 40px;">
+        <h2>Meet Our Team</h2>
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin-top: 20px;">
+            <div style="text-align: center; width: 200px;">
+                <img src="https://kpmg.com/content/dam/kpmg/uk/images/contact/c/alex-carter.png" 
+                     style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;" 
+                     alt="Team Member">
+                <h4>Alex Carter</h4>
+                <p>Co-Founder & CEO</p>
+            </div>
+            <div style="text-align: center; width: 200px;">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb7j10vvLiLOOxoFxAV8IX51GL8PbJeuf5qw&s" 
+                     style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;" 
+                     alt="Team Member">
+                <h4>Sophia Lee</h4>
+                <p>Chief Data Scientist</p>
+            </div>
+            <div style="text-align: center; width: 200px;">
+                <img src="https://www.jw.com/wp-content/uploads/2018/06/Jordan-Smith-Crop.jpg" 
+                     style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;" 
+                     alt="Team Member">
+                <h4>Jordan Smith</h4>
+                <p>Frontend Engineer</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section" style="background-color: rgba(0,0,0,0.5); border-radius: 12px; margin-top: 40px;">
+        <h2>What Our Users Say</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 20px;">
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; max-width: 300px;">
+                <p>"This platform changed how I understand the market. Visualizing stock data is now so easy!"</p>
+                <strong>– Emily R., Financial Analyst</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; max-width: 300px;">
+                <p>"Love the CSV upload feature! It’s fast and works like a charm with my data exports."</p>
+                <strong>– Mark D., Investor</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; max-width: 300px;">
+                <p>"Simple, modern, and insightful. A great tool for anyone in the trading world."</p>
+                <strong>– Riya K., Day Trader</strong>
+            </div>
+        </div>
+    </div>
+    <div class="section" style="margin-top: 40px;">
+        <h2>Trusted By</h2>
+        <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 30px; margin-top: 20px;">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMPyFTnCZM3JMV2zubLvlA6bIgoQuJJUnXvw&s" alt="Bloomberg" height="250" width="250">
+            <img src="https://s.yimg.com/os/creatr-uploaded-images/2019-09/1f16fbf0-de0a-11e9-9af9-77bfe97840a9" alt="Yahoo Finance" height="250" width="250">
+            <img src="C:\Users\Chandini\OneDrive\Desktop\frontend\images.png" alt="TradingView" height="250" width="250">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfOqRVtqvNG_K7FL8II7Zs2MIEu5NAHh056Q&s" alt="NASDAQ" height="250" width="250">
+        </div>
+    </div>
+            
+    
+
+    <hr color="white" width="100%">
+
+    <!-- Contact Section -->
+    <div id="contact" class="section">
+        <h2>Contact Us</h2>
+        <p><strong>Stock Market Analysis Inc.</strong></p>
+        <p>123 Financial Street, New York, NY 10001, USA</p>
+        <p>Customer Support: +1 (800) 123-4567</p>
+        <p>Business Inquiries: +1 (800) 987-6543</p>
+        <p>Email: support@stockmarketanalysis.com</p>
+    </div>
+    <script>
+        let stockChart;
+    async function fetchStockData() {
+        const symbol = document.getElementById('stockSymbol').value;
+        if (!symbol) return;
+        
+        try {
+            const response = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1min&apikey=4e6cca0a391d478686cf2c20ec87f003`);
+            const data = await response.json();
+            
+            if (data && data.values) {
+                const latest = data.values[0];
+                document.getElementById('price').innerText = `Price: $${latest.close}`;
+                document.getElementById('change').innerText = `Change: ${((latest.close - data.values[1].close) / data.values[1].close * 100).toFixed(2)}%`;
+                document.getElementById('volume').innerText = `Volume: ${latest.volume}`;
+                updateChart(data.values.reverse());
+            } else {
+                console.error('Invalid data format:', data);
+            }
+        } catch (error) {
+            console.error('Error fetching stock data:', error);
+        }
+    }
+
+    function updateChart(history) {
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        document.getElementById('stockChart').width = 800;
+        document.getElementById('stockChart').height = 400;
+        if (stockChart) stockChart.destroy();
+        stockChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: history.map(entry => entry.datetime),
+                datasets: [{
+                    label: 'Stock Price',
+                    data: history.map(entry => entry.close),
+                    borderColor: 'yellow',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Time' } },
+                        y: { title: { display: true, text: 'Price ($)' } }
+                    }
+            }
+        });
+    }
+    const users = [];
+
+  function handleSignup() {
+    const username = document.getElementById("signupUsername").value.trim();
+    const password = document.getElementById("signupPassword").value.trim();
+    if (username && password) {
+      users.push({ username, password });
+      console.log("User signed up:", users);
+      alert("Signup successful! Now login.");
+      document.getElementById("signupUsername").value = '';
+      document.getElementById("signupPassword").value = '';
+      const modal = bootstrap.Modal.getInstance(document.getElementById("signupModal"));
+      modal.hide();
+    } else {
+      alert("Please enter username and password");
+    }
+  }
+
+  function handleLogin() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+    const errorBox = document.getElementById("loginError");
+
+    const found = users.find(user => user.username === username && user.password === password);
+
+    if (found) {
+      errorBox.style.display = "none";
+      alert("Login successful!");
+      document.getElementById("loginUsername").value = '';
+      document.getElementById("loginPassword").value = '';
+      const modal = bootstrap.Modal.getInstance(document.getElementById("loginModal"));
+      modal.hide();
+    } else {
+      errorBox.style.display = "block";
+    }
+  }
+    </script>
+     <!-- Footer -->
+     <footer>
+        <p>© 2025 Stock Market Analysis. All Rights Reserved.</p>
+        <p>Stock Price Analysis</p>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content login-signup-modal">
+        <div class="modal-header">
+          <h5 class="modal-title">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="loginError" style="color: red; display: none;">Invalid Credentials, please try again. SignUp if not done!</div>
+          <input type="text" id="loginUsername" class="form-control mb-3" placeholder="Username">
+          <input type="password" id="loginPassword" class="form-control mb-3" placeholder="Password">
+          <button class="btn btn-primary w-100" onclick="handleLogin()">Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Signup Modal -->
+  <div class="modal fade" id="signupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content login-signup-modal">
+        <div class="modal-header">
+          <h5 class="modal-title">Sign Up</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="signupUsername" class="form-control mb-3" placeholder="Choose a Username">
+          <input type="password" id="signupPassword" class="form-control mb-3" placeholder="Choose a Password">
+          <button class="btn btn-success w-100" onclick="handleSignup()">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Trigger Buttons -->
+  <div style="position: fixed; top: 10px; right: 10px; z-index: 9999;">
+    <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</button>
+  </div>
+  
+</body>
+</html>
